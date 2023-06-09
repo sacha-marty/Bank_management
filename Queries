@@ -1,0 +1,85 @@
+
+- Show each type of transaction and its total amount
+
+SELECT Transaction_type.Trans_type_name, SUM(Transactions.Trans_amount) AS Total_Amount
+FROM Transactions
+JOIN Transaction_type ON Transactions.Transactiontype_Trans_type_id = Transaction_type.Trans_type_id
+GROUP BY Transaction_type.Trans_type_name;
+
+– Show the purchase details description and transaction type of each client 
+
+SELECT c.Full_name AS Customer_Name, pd.Purch_description AS Purchase_Description, tt.Trans_type_name AS Transaction_Type
+FROM Customer AS c
+JOIN Customer_purchase AS cp ON c.Cust_id = cp.Customer_Cust_id
+JOIN Purchase_details AS pd ON cp.Purchasedetails_Purch_details_id = pd.Purch_details_id
+JOIN Transactions AS t ON cp.Cust_purchase_id = t.Customerpurchase_Cust_purchase_id
+JOIN Transaction_type AS tt ON t.Transactiontype_Trans_type_id = tt.Trans_type_id;
+
+– Which type of customer subscription makes more money, show the customer name and id?
+ 
+SELECT ct.Cust_type_Name AS Subscription_Type, c.Full_name AS Customer_Name, c.Cust_id AS Customer_ID, SUM(ct.Price) AS Total_Revenue
+FROM Customer_subscription AS cs
+JOIN Customer AS c ON cs.Customer_Cust_id = c.Cust_id
+JOIN Customer_type AS ct ON cs.Customertype_Cust_Type_id = ct.Cust_Type_id
+GROUP BY ct.Cust_type_Name, c.Full_name, c.Cust_id
+ORDER BY Total_Revenue DESC
+LIMIT 1;
+
+- What is the name, total purchases and total amount of the purchase category with the most purchases?
+
+SELECT pd.Purch_category AS Purchase_Category, COUNT(*) AS Total_Purchases, SUM(t.Trans_amount) AS Total_Amount
+FROM Purchase_details AS pd
+JOIN Customer_purchase AS cp ON pd.Purch_details_id = cp.Purchasedetails_Purch_details_id
+JOIN Transactions AS t ON cp.Cust_purchase_id = t.Customerpurchase_Cust_purchase_id
+GROUP BY pd.Purch_category
+ORDER BY Total_Purchases DESC
+LIMIT 1;
+
+- Ranking of customers in descending order according to their account balance and the name of account type.
+
+SELECT c.Full_name AS Customer_Name, at.Account_type_name AS Account_Type, a.Account_balance AS Balance
+FROM Customer AS c
+JOIN Accounts AS a ON c.Cust_id = a.Customer_Cust_id
+JOIN Account_type AS at ON a.Accounttype_Account_type_id = at.Account_type_id
+ORDER BY a.Account_balance DESC, at.Account_type_name;
+
+- How many transactions every day?
+
+SELECT Trans_date, COUNT(*) AS Transaction_Count
+FROM Transactions
+GROUP BY Trans_date;
+
+- Show the date when the biggest and lowest transactions were done, their amounts and the customer names .
+
+SELECT c.Full_name AS Customer_Name, t.Trans_date AS Transaction_Date, t.Trans_amount AS Transaction_Amount
+FROM Transactions AS t
+JOIN Customer_purchase AS cp ON t.Customerpurchase_Cust_purchase_id = cp.Cust_purchase_id
+JOIN Customer AS c ON cp.Customer_Cust_id = c.Cust_id
+WHERE t.Trans_amount = (SELECT MAX(Trans_amount) FROM Transactions)
+   OR t.Trans_amount = (SELECT MIN(Trans_amount) FROM Transactions);
+
+- What is the most popular account type?
+
+SELECT Account_type_name, COUNT(*) AS Account_Count
+FROM Accounts
+JOIN Account_type ON Accounts.Accounttype_Account_type_id = Account_type.Account_type_id
+GROUP BY Account_type_name
+ORDER BY Account_Count DESC
+LIMIT 1;
+
+- Which client has the most consellors?
+
+SELECT c.Full_name AS Customer_Name, COUNT(cm.Coun_member_id) AS Counselor_Count
+FROM Customer AS c
+JOIN Counsellor_member AS cm ON c.Cust_id = cm.Customer_Cust_id
+GROUP BY c.Full_name
+HAVING COUNT(cm.Coun_member_id) = (SELECT MAX(counselor_count) FROM (SELECT COUNT(Coun_member_id)
+    AS counselor_count FROM Counsellor_member GROUP BY Customer_Cust_id) AS subquery);
+
+- Ranking in ascending order of the customers who make the most transactions.
+
+SELECT Customer.Full_name, COUNT(*) AS Transaction_Count
+FROM Customer_purchase
+JOIN Customer ON Customer_purchase.Customer_Cust_id = Customer.Cust_id
+GROUP BY Customer.Full_name
+ORDER BY Transaction_Count ASC;
