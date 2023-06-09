@@ -1,0 +1,93 @@
+-- Insert values into the Customer table
+INSERT INTO Customer (Cust_id, Full_name, Phone_number, Address)
+VALUES (1, 'John Doe', '1234567890', '123 Main St'),
+       (2, 'Jane Smith', '9876543210', '456 Elm St'),
+       (3, 'Michael Johnson', '5551234567', '789 Oak Ave'),
+       (4, 'Emily Davis', '3217894560', '987 Maple Ln');
+
+-- Insert values into the Customer_type table
+INSERT INTO Customer_type (Cust_Type_id, Cust_type_Name, Description, Price, Valid_from, Valid_until)
+VALUES (1, 'Basic', 'Basic customer type', 9.99, '2022-01-01', '2022-12-31'),
+       (2, 'Premium', 'Premium customer type', 19.99, '2022-01-01', '2022-12-31'),
+       (3, 'VIP', 'VIP customer type', 29.99, '2022-01-01', '2022-12-31'),
+       (4, 'Enterprise', 'Enterprise customer type', 49.99, '2022-01-01', '2022-12-31');
+
+-- Insert values into the Customer_subscription table
+INSERT INTO Customer_subscription (Sub_id, Start_date, End_date, Customertype_Cust_Type_id, Customer_Cust_id)
+VALUES (1, '2022-01-31', '2022-06-30', 1,1),
+       (2, '2022-03-17', '2022-06-16', 2,2),
+       (3, '2022-06-25', '2022-10-30', 3,3),
+       (4, '2022-09-01', '2022-12-25', 4,4);
+
+-- Insert values into the Personal_counsellor_type table
+INSERT INTO Personal_counsellor_type (Counsellor_type_id, Counsellor_type_name, Counsellor_type_salary)
+VALUES (1, 'Junior Counsellor', 3000.00),
+       (2, 'Senior Counsellor', 5000.00),
+       (3, 'Executive Counsellor', 10000.00);
+
+-- Insert values into the Personal_counsellor table
+INSERT INTO Personal_counsellor (Coun_id, Full_name, Mail_address, Working_date_start, Working_date_end, Personal_counsellor_type_counsellor_type_id)
+VALUES (1, 'David Johnson', 'david@example.com', '2022-05-01', '2022-12-31', 1),
+       (2, 'Sarah Anderson', 'sarah@example.com', '2022-02-01', '2022-12-31', 2),
+       (3, 'Mark Wilson', 'mark@example.com', '2022-01-01', '2022-12-31', 3),
+       (4, 'Emily Thompson', 'emily@example.com', '2022-06-01', '2022-12-31', 1);
+
+-- Insert values into the Counsellor_member table
+INSERT INTO Counsellor_member (Coun_member_id, Start_date, End_date, Customer_Cust_id, Personal_counsellor_coun_id)
+VALUES (1, '2022-05-01', '2022-06-30', 1, 1),
+       (2, '2022-01-01', '2022-06-16', 2, 3),
+       (3, '2022-06-25', '2022-10-30', 3, 2),
+       (4, '2022-06-25', '2022-10-30', 3, 4);
+
+-- Insert values into the Account_type table
+INSERT INTO Account_type (Account_type_id, Account_type_name, Max_balance)
+VALUES (1, 'Savings', 50000.00),
+       (2, 'Credit Card', 2500.00),
+       (3, 'Investment', 100000.00);
+
+-- Insert values into the Accounts table
+INSERT INTO Accounts (Account_id, Account_name, Date_open, Account_balance, Accounttype_Account_type_id, Customer_Cust_id)
+VALUES (1, 'Savings Account', '2022-01-31', 5000.00, 1, 1),
+       (2, 'Saving Account', '2022-03-17', 10000.00, 1, 2),
+       (3, 'Credit Card', '2022-06-25', 500.00, 2, 3),
+       (4, 'Investment Account', '2022-09-01', 50000.00, 3, 4),
+	   (5, 'Saving Account', '2022-09-01', 20000.00, 1, 4);
+
+-- Insert values into the Purchase_details table
+INSERT INTO Purchase_details (Purch_details_id, Purch_category, Purch_description)
+VALUES (1, 'Electronics', 'Smartphone'),
+       (2, 'Transports', 'Plane'),
+       (3, 'Leisures', 'Golf'),
+       (4, 'Daily', 'Coffee'),
+	   (5, 'Other', 'Bank activity');
+
+-- Insert values into the Customer_purchase table
+INSERT INTO Customer_purchase (Cust_purchase_id, Cust_purchase_date, Purchasedetails_Purch_details_id, Customer_Cust_id)
+VALUES (1, '2022-07-01', 1, 1),
+       (2, '2022-08-01', 2, 2),
+       (3, '2022-08-15', 3, 3),
+       (4, '2022-09-07', 4, 4),
+	   (5, '2022-10-12', 5, 4),
+	   (6, '2022-04-03', 5, 2),
+	   (7, '2022-07-19', 5, 1),
+	   (8, '2022-08-02', 5, 2)
+	   ;
+
+-- Insert values into the Transaction_type table
+INSERT INTO Transaction_type (Trans_type_id, Trans_type_name)
+VALUES (1, 'Deposit'),
+       (2, 'Withdrawal'),
+       (3, 'Transfer'),
+       (4, 'Payment'),
+	   (5, 'Loan');
+
+-- Insert values into the Transactions table
+INSERT INTO Transactions (Transaction_id, Trans_date, Trans_amount, Trans_status, Customerpurchase_Cust_purchase_id, Transactiontype_Trans_type_id, Accounts_Account_id)
+VALUES (1, '2022-05-01', -1000, 'Completed', 1, 4, 1),
+       (2, '2022-04-10', -500, 'Progress', 2, 4, 2),
+       (3, '2022-06-10', -200, 'Progress', 3, 4, 3),
+       (4, '2022-09-07', -100, 'Completed', 4, 4, 5),
+	   (5, '2022-10-12', 20000, 'Completed', 5, 4, 4),
+	   (6, '2022-04-03', -500,'Progress', 6, 3, 2),
+	   (7, '2022-07-19', 1000, 'Completed', 7, 1, 1),
+	   (8, '2022-08-02', 300, 'Completed', 8, 2, 2);
