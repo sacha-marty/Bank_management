@@ -1,0 +1,128 @@
+create table Customer(
+Cust_id int primary key not null,
+Full_name varchar(50) not null,
+Phone_number varchar(50) not null,
+Address text
+);
+
+create table Customer_type(
+Cust_Type_id int primary key not null,
+Cust_type_Name varchar(50),
+Description text,
+Price money,
+Valid_from date,
+Valid_until date
+);
+
+create table Customer_subscription(
+Sub_id int primary key not null,
+Start_date date,
+End_date date,
+Customertype_Cust_Type_id int not null,
+    constraint fk_customersub
+    foreign key (Customertype_Cust_Type_id)
+    references Customer_type(Cust_Type_id),
+Customer_Cust_id int not null,
+    constraint fk_customersub2
+    foreign key (Customer_Cust_id)
+    references Customer(Cust_id)
+    );
+
+create table Personal_counsellor_type(
+Counsellor_type_id int primary key not null,
+Counsellor_type_name varchar(50),
+Counsellor_type_salary decimal
+	);
+
+create table Personal_counsellor(
+Coun_id int primary key not null,
+Full_name varchar(50),
+Mail_address varchar(50),
+Working_date_start date,
+Working_date_end date,
+Personal_counsellor_type_counsellor_type_id int not null,
+	constraint fk_personal_counsellor
+	foreign key (Personal_counsellor_type_counsellor_type_id)
+	references Personal_counsellor_type(Counsellor_type_id)
+	);
+
+create table Counsellor_member(
+Coun_member_id int primary key not null,
+Start_date date,
+End_date date,
+Customer_Cust_id int not null,
+	constraint fk_counsellor_member
+	foreign key (Customer_Cust_id)
+	references Customer(Cust_id),
+Personal_counsellor_coun_id int not null,
+	constraint fk_counsellor_member2
+	foreign key (Personal_counsellor_coun_id)
+	references Personal_counsellor(Coun_id)
+	);
+
+
+create table Account_type(
+Account_type_id int primary key not null,
+Account_type_name varchar(50),
+Max_balance decimal
+);
+
+create table Accounts(
+Account_id int primary key not null,
+Account_name varchar(50),
+Date_open date,
+Account_balance decimal,
+Accounttype_Account_type_id int not null,
+    constraint fk_accounts
+    foreign key (Accounttype_Account_type_id)
+    references Account_type(Account_type_id),
+Customer_Cust_id int not null,
+    constraint fk_accounts2
+    foreign key (Customer_Cust_id)
+    references Customer(Cust_id)
+    );
+
+create table Purchase_details(
+Purch_details_id int primary key not null,
+Purch_category varchar(50),
+Purch_description varchar(50)
+    );
+
+create table Customer_purchase(
+Cust_purchase_id int primary key not null,
+Cust_purchase_date date,
+Purchasedetails_Purch_details_id int not null,
+	constraint fk_customer_purchase
+	foreign key (Purchasedetails_Purch_details_id)
+	references Purchase_details(Purch_details_id),
+Customer_Cust_id int not null,
+	constraint fk_customer_purchase2
+	foreign key (Customer_Cust_id)
+	references Customer(Cust_id)
+	);
+
+create table Transaction_type(
+Trans_type_id int primary key not null,
+Trans_type_name varchar(50)
+	);
+
+
+create table Transactions(
+Transaction_id int primary key not null,
+Trans_date date,
+Trans_amount int,
+Trans_status char(10),
+Customerpurchase_Cust_purchase_id int not null,
+    constraint fk_transactions
+    foreign key (Customerpurchase_Cust_purchase_id)
+    references Customer_purchase(Cust_purchase_id),
+Transactiontype_Trans_type_id int not null,
+    constraint fk_transactions2
+    foreign key (Transactiontype_Trans_type_id)
+    references Transaction_type(Trans_type_id),
+Accounts_Account_id int not null,
+    constraint fk_transactions3
+    foreign key (Accounts_Account_id)
+    references Accounts(Account_id)
+	);
+
