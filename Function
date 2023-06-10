@@ -49,3 +49,27 @@ BEGIN
     RETURN net_income;
 END;
 $$ LANGUAGE plpgsql;
+
+Function that show history of all transaction do by a customer. This function take the customer name in parameter.
+
+CREATE OR REPLACE FUNCTION GetCustomerTransactions(customer_name VARCHAR)
+RETURNS TABLE (
+    Transaction_id INT,
+    Trans_date DATE,
+    Trans_amount INT,
+    Trans_status CHAR(10),
+    Purch_category VARCHAR(50),
+    Purch_description VARCHAR(50)
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT t.Transaction_id, t.Trans_date, t.Trans_amount, t.Trans_status, pd.Purch_category, pd.Purch_description
+    FROM Transactions t
+    JOIN Customer_purchase cp ON t.Customerpurchase_Cust_purchase_id = cp.Cust_purchase_id
+    JOIN Purchase_details pd ON cp.Purchasedetails_Purch_details_id = pd.Purch_details_id
+    JOIN Customer c ON cp.Customer_Cust_id = c.Cust_id
+    WHERE c.Full_name = customer_name;
+
+    RETURN;
+END;
+$$ LANGUAGE plpgsql;
