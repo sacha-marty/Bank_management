@@ -54,7 +54,7 @@ FOR EACH ROW
 EXECUTE FUNCTION UpdateTransactionStatusAndAccountBalance();
 
 
-function that update the purchase category column based on the value of the purchase description column: 
+Trigger that update the purchase category column based on the value of the purchase description column : 
 
 CREATE OR REPLACE FUNCTION UpdatePurchaseCategory()
 RETURNS TRIGGER AS $$
