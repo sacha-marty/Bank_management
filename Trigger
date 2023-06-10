@@ -52,3 +52,30 @@ CREATE TRIGGER UpdateTransactionStatusAndAccountBalanceTrigger
 AFTER INSERT ON Transactions
 FOR EACH ROW
 EXECUTE FUNCTION UpdateTransactionStatusAndAccountBalance();
+
+
+function that update the purchase category column based on the value of the purchase description column: 
+
+CREATE OR REPLACE FUNCTION UpdatePurchaseCategory()
+RETURNS TRIGGER AS $$
+BEGIN
+	IF NEW.Purch_description ILIKE '%electronics%' or NEW.Purch_description ILIKE '%computer%' or NEW.Purch_description ILIKE '%smartphone%'  THEN
+    	NEW.Purch_category := 'Electronics';
+	ELSIF NEW.Purch_description ILIKE '%clothing%' THEN
+    	NEW.Purch_category := 'Clothing';
+	ELSIF NEW.Purch_description ILIKE '%car%' or NEW.Purch_description ILIKE '%transport%'  or NEW.Purch_description ILIKE '%plain%' or NEW.Purch_description ILIKE '%train%'THEN
+    	NEW.Purch_category := 'Transport';    
+	ELSIF NEW.Purch_description ILIKE '%food%'or NEW.Purch_description ILIKE '%coffee%' or NEW.Purch_description ILIKE '%groceries%' THEN
+    	NEW.Purch_category := 'Daily';   		 
+	ELSE
+    	NEW.Purch_category := 'Other';
+	END IF;
+
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER UpdatePurchaseCategoryTrigger
+BEFORE INSERT ON Purchase_details
+FOR EACH ROW
+EXECUTE FUNCTION UpdatePurchaseCategory();
