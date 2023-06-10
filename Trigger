@@ -1,0 +1,54 @@
+Trigger that  check balance : 
+
+CREATE OR REPLACE FUNCTION CheckMaxBalance()
+RETURNS TRIGGER AS $$
+DECLARE
+    account_type_max_balance decimal;
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        -- Check if Account_balance exceeds Max_balance
+        SELECT at.Max_balance INTO account_type_max_balance
+        FROM Account_type at
+        JOIN Accounts a ON at.Account_type_id = a.Accounttype_Account_type_id
+        WHERE a.Account_id = NEW.Accounts_Account_id;
+
+        IF (SELECT Account_balance + NEW.Trans_amount FROM Accounts WHERE Account_id = NEW.Accounts_Account_id) > account_type_max_balance THEN
+            RAISE EXCEPTION 'Account balance exceeds maximum balance for the account type.';
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER CheckMaxBalanceTrigger
+BEFORE INSERT ON Transactions
+FOR EACH ROW
+EXECUTE FUNCTION CheckMaxBalance();
+
+
+Trigger that update the status of a transaction and the blance of the account after a transaction :
+
+CREATE OR REPLACE FUNCTION UpdateTransactionStatusAndAccountBalance()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        -- Update Transaction status to 'Complete'
+        UPDATE Transactions
+        SET Trans_status = 'Complete'
+        WHERE Transaction_id = NEW.Transaction_id;
+
+        -- Update Account_balance
+        UPDATE Accounts
+        SET Account_balance = Account_balance + NEW.Trans_amount
+        WHERE Account_id = NEW.Accounts_Account_id;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER UpdateTransactionStatusAndAccountBalanceTrigger
+AFTER INSERT ON Transactions
+FOR EACH ROW
+EXECUTE FUNCTION UpdateTransactionStatusAndAccountBalance();
