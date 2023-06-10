@@ -1,0 +1,51 @@
+Function that show the information about a customer : 
+
+CREATE FUNCTION GetCustomerDetails(customer_name varchar(50))
+RETURNS TABLE (
+    Cust_id int,
+    Full_name varchar(50),
+    Cust_type_Name varchar(50),
+    Account_balance decimal
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        c.Cust_id,
+        c.Full_name,
+        ct.Cust_type_Name,
+        a.Account_balance
+    FROM
+        Customer c
+        JOIN Customer_type ct ON c.Cust_id = ct.Cust_Type_id
+        JOIN Accounts a ON c.Cust_id = a.Customer_Cust_id
+    WHERE
+        c.Full_name = customer_name;
+END;
+$$ LANGUAGE plpgsql;
+
+
+function that show the total income of the bank : 
+
+CREATE OR REPLACE FUNCTION CalculateTotalIncome()
+RETURNS money AS $$
+DECLARE
+    total_income money;
+    total_salary money;
+    net_income money;
+BEGIN
+    SELECT SUM(ct.Price * (DATE_PART('year', cs.End_date) - DATE_PART('year', cs.Start_date)) * 12 
+                        + DATE_PART('month', cs.End_date) - DATE_PART('month', cs.Start_date)) INTO total_income
+    FROM Customer_subscription cs
+    INNER JOIN Customer_type ct ON cs.Customertype_Cust_Type_id = ct.Cust_Type_id;
+
+    SELECT SUM(pc.Counsellor_type_salary * (DATE_PART('year', cm.End_date) - DATE_PART('year', cm.Start_date)) * 12 
+                                           + DATE_PART('month', cm.End_date) - DATE_PART('month', cm.Start_date))
+    INTO total_salary
+    FROM Personal_counsellor pc
+    INNER JOIN Counsellor_member cm ON pc.Coun_id = cm.Personal_counsellor_coun_id;
+
+    net_income := total_income - total_salary;
+    RETURN net_income;
+END;
+$$ LANGUAGE plpgsql;
