@@ -1,4 +1,4 @@
-Trigger that  check balance : 
+- Trigger that  check balance : 
 
 CREATE OR REPLACE FUNCTION CheckMaxBalance()
 RETURNS TRIGGER AS $$
@@ -27,7 +27,7 @@ FOR EACH ROW
 EXECUTE FUNCTION CheckMaxBalance();
 
 
-Trigger that update the status of a transaction and the blance of the account after a transaction :
+- Trigger that update the status of a transaction and the blance of the account after a transaction :
 
 CREATE OR REPLACE FUNCTION UpdateTransactionStatusAndAccountBalance()
 RETURNS TRIGGER AS $$
@@ -54,7 +54,7 @@ FOR EACH ROW
 EXECUTE FUNCTION UpdateTransactionStatusAndAccountBalance();
 
 
-Trigger that update the purchase category column based on the value of the purchase description column : 
+- Trigger that update the purchase category column based on the value of the purchase description column : 
 
 CREATE OR REPLACE FUNCTION UpdatePurchaseCategory()
 RETURNS TRIGGER AS $$
@@ -79,3 +79,60 @@ CREATE TRIGGER UpdatePurchaseCategoryTrigger
 BEFORE INSERT ON Purchase_details
 FOR EACH ROW
 EXECUTE FUNCTION UpdatePurchaseCategory();
+
+- This trigger sets the start_date and end_date values for a new customer subscription before inserting a row into the customer_subscription table
+
+CREATE OR REPLACE FUNCTION set_subscription_dates()
+RETURNS TRIGGER AS $$
+BEGIN
+	NEW.start_date := CURRENT_DATE;
+	NEW.end_date := CURRENT_DATE + INTERVAL '1 year';
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER before_insert_subscription
+BEFORE INSERT ON customer_subscription
+FOR EACH ROW
+EXECUTE FUNCTION set_subscription_dates();
+
+- function/trigger that print the name of a new customer when he is added
+CREATE OR REPLACE FUNCTION message_insert_customer()
+RETURNS TRIGGER AS $$
+BEGIN
+	RAISE NOTICE 'New customer inserted: %', NEW.full_name;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER message_insert_customer
+AFTER INSERT ON customer
+FOR EACH ROW
+EXECUTE FUNCTION message_insert_customer();
+
+- Trigger that checks if a client already has an account before applying for a counsellor. If not rolls back and sends a message.
+
+CREATE OR REPLACE FUNCTION check_customer_account()
+RETURNS TRIGGER AS $$
+DECLARE
+	customer_account_exists INTEGER;
+BEGIN
+	-- Check if the customer already has an account
+	SELECT COUNT(*) INTO customer_account_exists
+	FROM Accounts
+	WHERE Customer_Cust_id = NEW.Customer_Cust_id;
+    
+	-- If no account exists, raise an exception and roll back the transaction
+	IF customer_account_exists = 0 THEN
+    	RAISE EXCEPTION 'Customer does not have an account. Open an account before you get a counselor';
+	END IF;
+    
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_customer_account_trigger
+BEFORE INSERT ON Counsellor_member
+FOR EACH ROW
+EXECUTE FUNCTION check_customer_account();
+
