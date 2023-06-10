@@ -25,7 +25,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-function that show the total income of the bank : 
+Function that show the total income of the bank : 
 
 CREATE OR REPLACE FUNCTION CalculateTotalIncome()
 RETURNS money AS $$
@@ -50,7 +50,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-Function that show history of all transaction do by a customer. This function take the customer name in parameter.
+Function that show history of all transaction do by a customer. This function take the customer name in parameter :
 
 CREATE OR REPLACE FUNCTION GetCustomerTransactions(customer_name VARCHAR)
 RETURNS TABLE (
