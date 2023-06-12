@@ -1,0 +1,25 @@
+Index on Customer's Cust_id:
+sql
+CREATE INDEX idx_customer_cust_id ON Customer (Cust_id);
+
+This index can be beneficial for queries that involve filtering or joining based on the customer's Cust_id.
+Index on Transactions' Customerpurchase_Cust_purchase_id:
+sql
+CREATE INDEX idx_transactions_cust_purchase_id ON Transactions (Customerpurchase_Cust_purchase_id);
+
+This index can improve the performance of queries that involve joining or filtering based on the Customerpurchase_Cust_purchase_id column in the Transactions table.
+Index on Customer_purchase's Customer_Cust_id:
+sql
+CREATE INDEX idx_customer_purchase_cust_id ON Customer_purchase (Customer_Cust_id);
+
+This index can enhance the performance of queries that involve joining or filtering based on the Customer_Cust_id column in the Customer_purchase table.
+Index on Accounts' Customer_Cust_id:
+sql
+CREATE INDEX idx_accounts_cust_id ON Accounts (Customer_Cust_id);
+
+This index can improve the performance of queries that involve joining or filtering based on the Customer_Cust_id column in the Accounts table.
+Index on Personal_counsellor's Coun_id:
+sql
+CREATE INDEX idx_personal_counsellor_coun_id ON Personal_counsellor (Coun_id);
+
+This index can be beneficial for queries that involve filtering or joining based on the Coun_id column in the Personal_counsellor table.
